@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Marathon" />
+  <title>Marathon Training</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { font-family: 'Barlow', sans-serif; background: #f5f7fa; -webkit-tap-highlight-color: transparent; }
+    .hdr { background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%); position: relative; overflow: hidden; }
+    .hdr::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #43a047, #66bb6a, #43a047); }
+    .hdr-top { padding: 1.2rem 1.2rem 0; position: relative; z-index: 1; }
+    .logo-row { display: flex; align-items: flex-end; gap: 0.7rem; margin-bottom: 0.15rem; }
+    .logo-main { font-family: 'Barlow Condensed', sans-serif; font-size: 2.6rem; font-weight: 900; color: #fff; letter-spacing: 0.02em; line-height: 1; text-transform: uppercase; }
+    .logo-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 0.15em; padding-bottom: 0.4rem; }
+    .tagline { font-family: 'Barlow', sans-serif; font-size: 0.7rem; color: rgba(255,255,255,0.55); margin-bottom: 1rem; font-style: italic; }
+    .pbar { height: 4px; background: rgba(255,255,255,0.2); }
+    .pfill { height: 100%; background: #69f0ae; transition: width 0.5s ease; }
+    .stats-bar { background: rgba(0,0,0,0.25); padding: 0.75rem 1.2rem; display: flex; gap: 0; flex-wrap: wrap; align-items: stretch; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; padding: 0 0.9rem; border-right: 1px solid rgba(255,255,255,0.15); min-width: 60px; }
+    .stat-item:first-child { padding-left: 0; }
+    .stat-item:last-child { border-right: none; }
+    .stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1; }
+    .stat-lbl { font-family: 'Barlow', sans-serif; font-size: 0.55rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.1rem; white-space: nowrap; }
+    .stat-green { color: #69f0ae; }
+    .date-btns { display: flex; gap: 0.5rem; padding: 0.6rem 1.2rem; flex-wrap: wrap; }
+    .dbtn { display: flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.8rem; border-radius: 3px; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); color: #fff; transition: all 0.15s; letter-spacing: 0.04em; text-transform: uppercase; }
+    .dbtn:active { background: rgba(255,255,255,0.25); }
+    .dbtn.race-btn { border-color: rgba(255,160,160,0.5); background: rgba(198,40,40,0.25); }
+    .dppanel { background: #fff; border-top: 3px solid #43a047; padding: 0.9rem 1.2rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .mode-toggle { display: flex; border-radius: 4px; overflow: hidden; border: 2px solid #1565c0; }
+    .mtbtn { padding: 0.4rem 0.9rem; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; border: none; transition: all 0.15s; }
+    .mtbtn.active-start { background: #1565c0; color: #fff; }
+    .mtbtn.active-race { background: #c62828; color: #fff; }
+    .mtbtn.inactive { background: #fff; color: #999; }
+    .dp-label { font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; }
+    .dinput { border: 2px solid #ccc; border-radius: 4px; padding: 0.4rem 0.6rem; font-family: 'Barlow', sans-serif; font-size: 0.85rem; color: #1a1a2e; outline: none; }
+    .dinput:focus { border-color: #1565c0; }
+    .dp-preview { font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 3px; }
+    .dp-preview.start-p { background: #e3f2fd; color: #1565c0; }
+    .dp-preview.race-p { background: #ffebee; color: #c62828; }
+    .applybtn { background: #1565c0; color: #fff; border: none; border-radius: 4px; padding: 0.45rem 1.1rem; font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+    .cancelbtn { background: none; border: 2px solid #ddd; border-radius: 4px; color: #888; padding: 0.4rem 0.8rem; font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 600; cursor: pointer; text-transform: uppercase; }
+    .navtabs { background: #fff; border-bottom: 3px solid #e0e0e0; display: flex; padding: 0 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 10; }
+    .ntab { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 1.2rem; cursor: pointer; color: #888; border: none; background: none; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: all 0.15s; }
+    .ntab.active { color: #1565c0; border-bottom-color: #1565c0; }
+    .content { padding: 1.2rem; max-width: 680px; margin: 0 auto; padding-bottom: 2rem; }
+    .wblk { margin-bottom: 1.4rem; }
+    .whdr { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.55rem; }
+    .week-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; background: #1565c0; padding: 0.2rem 0.65rem; border-radius: 2px; }
+    .week-label.race-week { background: #c62828; }
+    .whdr-line { flex: 1; height: 1px; background: #dde3ed; }
+    .week-dates { font-family: 'Barlow', sans-serif; font-size: 0.62rem; color: #aaa; }
+    .scard { background: #fff; border: 1.5px solid #e0e8f0; border-radius: 6px; padding: 0.8rem 0.9rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.8rem; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+    .scard:active { background: #f5f8ff; }
+    .scard.done { opacity: 0.4; }
+    .scard.done .wname { text-decoration: line-through; }
+    .scard.cur { border-color: #1565c0; background: #f0f6ff; }
+    .scard.cur::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #1565c0; }
+    .scard.race-card { border-color: #c62828; background: #fff8f8; }
+    .scard.race-card::before { background: #c62828; }
+    .chk { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ccd8e8; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 12px; font-weight: 700; color: transparent; }
+    .chk.on { background: #43a047; border-color: #43a047; color: #fff; }
+    .smain { flex: 1; min-width: 0; }
+    .smeta { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.2rem; flex-wrap: wrap; }
+    .dchip { font-family: 'Barlow', sans-serif; font-size: 0.65rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tbadge { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.1rem 0.45rem; border-radius: 2px; border-width: 1px; border-style: solid; }
+    .today-chip { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: #1565c0; color: #fff; padding: 0.1rem 0.45rem; border-radius: 2px; }
+    .wname { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; letter-spacing: 0.02em; text-transform: uppercase; }
+    .race-wname { color: #c62828; }
+    .ntxt { font-family: 'Barlow', sans-serif; font-size: 0.68rem; color: #888; margin-top: 0.2rem; font-style: italic; }
+    .nbtn { background: none; border: 1.5px solid #dde3ed; border-radius: 3px; color: #aaa; padding: 0.1rem 0.5rem; font-family: 'Barlow', sans-serif; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; margin-top: 0.3rem; }
+    .nwrap { margin-top: 0.45rem; display: flex; gap: 0.45rem; }
+    .ninput { flex: 1; border: 1.5px solid #1565c0; border-radius: 4px; padding: 0.3rem 0.55rem; font-family: 'Barlow', sans-serif; font-size: 0.75rem; outline: none; color: #1a1a2e; }
+    .nsave { background: #1565c0; color: #fff; border: none; border-radius: 4px; padding: 0.3rem 0.75rem; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+    .sc { background: #fff; border: 1.5px solid #e0e8f0; border-radius: 6px; padding: 1.1rem 1.2rem; margin-bottom: 0.9rem; }
+    .sct { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #1565c0; margin-bottom: 0.9rem; padding-bottom: 0.55rem; border-bottom: 2px solid #e3f2fd; }
+    .bnum { font-family: 'Barlow Condensed', sans-serif; font-size: 3rem; font-weight: 900; color: #1565c0; line-height: 1; }
+    .blbl { font-family: 'Barlow', sans-serif; font-size: 0.65rem; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.15rem; }
+    .tbd { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.4rem; }
+    .trow { display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.75rem; border-radius: 4px; border: 1.5px solid #e0e8f0; background: #fafcff; }
+    .tdot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .tinfo { font-family: 'Barlow', sans-serif; font-size: 0.68rem; }
+    .tname { color: #555; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.6rem; }
+    .tcnt { color: #1565c0; font-weight: 700; font-size: 0.9rem; font-family: 'Barlow Condensed', sans-serif; margin-top: 0.05rem; }
+    .rcd { background: linear-gradient(135deg, #0d47a1, #1565c0); border-radius: 8px; padding: 1.8rem 1.4rem; text-align: center; margin-bottom: 0.9rem; position: relative; overflow: hidden; }
+    .rcd::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #43a047, #69f0ae, #43a047); }
+    .rcnum { font-family: 'Barlow Condensed', sans-serif; font-size: 5rem; font-weight: 900; color: #fff; line-height: 1; }
+    .rclbl { font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-top: 0.25rem; }
+    .timeline-wrap { display: flex; flex-wrap: wrap; gap: 3px; }
+    .timeline-sq { width: 13px; height: 13px; border-radius: 2px; }
+    .timeline-legend { font-family: 'Barlow', sans-serif; font-size: 0.6rem; color: #aaa; margin-top: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const DEFAULT_START = "2026-01-06";
+const STORAGE_KEY = "marathon-tracker-v2";
+const RACE_OFFSET = 193;
+
+const rawSchedule = [
+  { week: 1, offset: 0, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 2, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 4, workout: "3 Miles", type: "run" },
+  { week: 2, offset: 7, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 9, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 11, workout: "4 Miles", type: "run" },
+  { week: 3, offset: 14, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 16, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 18, workout: "2.5 Miles", type: "run" },
+  { week: 4, offset: 21, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 23, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 25, workout: "5.5 Miles", type: "run" },
+  { week: 5, offset: 28, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 30, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 32, workout: "3 Miles", type: "run" },
+  { week: 6, offset: 35, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 37, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 39, workout: "7 Miles", type: "run" },
+  { week: 7, offset: 42, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 44, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 46, workout: "3 Miles", type: "run" },
+  { week: 8, offset: 49, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 51, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 53, workout: "9 Miles", type: "run" },
+  { week: 9, offset: 56, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 58, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 60, workout: "3 Miles", type: "run" },
+  { week: 10, offset: 63, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 65, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 67, workout: "11 Miles", type: "run" },
+  { week: 11, offset: 70, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 72, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 74, workout: "3 Miles", type: "run" },
+  { week: 12, offset: 77, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 79, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 81, workout: "13 Miles", type: "run" },
+  { week: 13, offset: 84, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 86, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 88, workout: "3 Miles", type: "run" },
+  { week: 14, offset: 91, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 93, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 95, workout: "15 Miles", type: "run" },
+  { week: 15, offset: 98, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 100, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 102, workout: "3 Miles", type: "run" },
+  { week: 16, offset: 105, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 107, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 109, workout: "17 Miles", type: "run" },
+  { week: 17, offset: 112, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 114, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 116, workout: "5 Miles", type: "run" },
+  { week: 18, offset: 119, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 121, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 123, workout: "6 Miles w/ Magic Mile", type: "special" },
+  { week: 19, offset: 126, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 128, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 130, workout: "20 Miles", type: "long" },
+  { week: 20, offset: 133, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 135, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 137, workout: "6 Miles", type: "run" },
+  { week: 21, offset: 140, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 142, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 144, workout: "6 Miles w/ Magic Mile", type: "special" },
+  { week: 22, offset: 147, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 149, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 151, workout: "23 Miles", type: "long" },
+  { week: 23, offset: 154, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 156, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 158, workout: "6 Miles", type: "run" },
+  { week: 24, offset: 161, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 163, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 165, workout: "6 Miles w/ Magic Mile", type: "special" },
+  { week: 25, offset: 168, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 170, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 172, workout: "26 Miles", type: "long" },
+  { week: 26, offset: 175, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 177, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 179, workout: "6 Miles", type: "run" },
+  { week: 27, offset: 182, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 184, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 186, workout: "6 Miles", type: "run" },
+  { week: 28, offset: 189, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 191, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 193, workout: "26.219 Miles", type: "race" },
+  { week: 29, offset: 196, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 198, workout: "30 Min.", type: "cardio" },
+  { week: null, offset: 200, workout: "3 Miles", type: "run" },
+];
+
+const typeStyles = {
+  cardio:  { bg: "#e8f4fd", border: "#1565c0", text: "#1565c0", label: "Timed Run" },
+  run:     { bg: "#e8f5e9", border: "#2e7d32", text: "#2e7d32", label: "Run" },
+  long:    { bg: "#f3e5f5", border: "#6a1b9a", text: "#6a1b9a", label: "Long Run" },
+  special: { bg: "#fff8e1", border: "#e65100", text: "#e65100", label: "Magic Mile" },
+  race:    { bg: "#ffebee", border: "#c62828", text: "#c62828", label: "RACE DAY" },
+};
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + "T12:00:00");
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split("T")[0];
+}
+
+function buildTrainingData(startDate) {
+  return rawSchedule.map((s) => ({ ...s, date: addDays(startDate, s.offset) }));
+}
+
+function fmtShort(dateStr) {
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+function fmtFull(dateStr) {
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+function fmtDay(dateStr) {
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", { weekday: "long" });
+}
+function getCurrentIdx(data) {
+  const today = new Date();
+  for (let i = 0; i < data.length; i++) {
+    if (new Date(data[i].date + "T12:00:00") >= today) return i;
+  }
+  return data.length - 1;
+}
+
+function App() {
+  const [startDate, setStartDate] = useState(DEFAULT_START);
+  const [completed, setCompleted] = useState({});
+  const [notes, setNotes] = useState({});
+  const [editingNote, setEditingNote] = useState(null);
+  const [noteText, setNoteText] = useState("");
+  const [view, setView] = useState("schedule");
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerMode, setPickerMode] = useState("start");
+  const [pendingStart, setPendingStart] = useState(DEFAULT_START);
+  const [pendingRace, setPendingRace] = useState(addDays(DEFAULT_START, RACE_OFFSET));
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const p = JSON.parse(saved);
+        setCompleted(p.completed || {});
+        setNotes(p.notes || {});
+        if (p.startDate) {
+          setStartDate(p.startDate);
+          setPendingStart(p.startDate);
+          setPendingRace(addDays(p.startDate, RACE_OFFSET));
+        }
+      }
+    } catch(e) {}
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, notes, startDate })); } catch(e) {}
+  }, [completed, notes, startDate, loaded]);
+
+  const onStartChange = (v) => { setPendingStart(v); if (v) setPendingRace(addDays(v, RACE_OFFSET)); };
+  const onRaceChange  = (v) => { setPendingRace(v); if (v) setPendingStart(addDays(v, -RACE_OFFSET)); };
+  const openPicker = (mode) => { setPickerMode(mode); setPendingStart(startDate); setPendingRace(addDays(startDate, RACE_OFFSET)); setShowPicker(true); };
+  const applyDates = () => { setStartDate(pendingStart); setShowPicker(false); };
+
+  const trainingData = buildTrainingData(startDate);
+  const raceDate = addDays(startDate, RACE_OFFSET);
+  const total = trainingData.length;
+  const done = Object.values(completed).filter(Boolean).length;
+  const pct = Math.round((done / total) * 100);
+  const curIdx = getCurrentIdx(trainingData);
+  const daysLeft = Math.max(0, Math.ceil((new Date(raceDate + "T12:00:00") - new Date()) / 86400000));
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const toggleDone = (i) => setCompleted(p => ({ ...p, [i]: !p[i] }));
+  const saveNote = (i) => { setNotes(p => ({ ...p, [i]: noteText })); setEditingNote(null); setNoteText(""); };
+
+  let weeks = [];
+  let curWeek = null;
+  trainingData.forEach((s, i) => {
+    if (s.week !== null) { curWeek = { weekNum: s.week, sessions: [] }; weeks.push(curWeek); }
+    if (curWeek) curWeek.sessions.push({ ...s, idx: i });
+  });
+
+  return (
+    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", minHeight: "100vh" }}>
+
+      <div className="hdr">
+        <div className="hdr-top">
+          <div className="logo-row">
+            <div className="logo-main">Marathon</div>
+            <div className="logo-sub">Training Program</div>
+          </div>
+          <div className="tagline">By Olympian Jeff Galloway &middot; runDisney Beginner Plan</div>
+        </div>
+        <div className="pbar"><div className="pfill" style={{ width: pct + "%" }} /></div>
+        <div className="stats-bar">
+          <div className="stat-item"><div className="stat-val stat-green">{done}</div><div className="stat-lbl">Done</div></div>
+          <div className="stat-item"><div className="stat-val">{total - done}</div><div className="stat-lbl">Left</div></div>
+          <div className="stat-item"><div className="stat-val stat-green">{pct}%</div><div className="stat-lbl">Progress</div></div>
+          <div className="stat-item"><div className="stat-val">{daysLeft}</div><div className="stat-lbl">To Race</div></div>
+        </div>
+        <div className="date-btns">
+          <button className="dbtn" onClick={() => showPicker && pickerMode === "start" ? setShowPicker(false) : openPicker("start")}>
+            📅 Start: {fmtShort(startDate)}
+          </button>
+          <button className="dbtn race-btn" onClick={() => showPicker && pickerMode === "race" ? setShowPicker(false) : openPicker("race")}>
+            🏁 Race: {fmtShort(raceDate)}
+          </button>
+        </div>
+
+        {showPicker && (
+          <div className="dppanel">
+            <div className="mode-toggle">
+              <button className={"mtbtn " + (pickerMode === "start" ? "active-start" : "inactive")} onClick={() => setPickerMode("start")}>Start</button>
+              <button className={"mtbtn " + (pickerMode === "race" ? "active-race" : "inactive")} onClick={() => setPickerMode("race")}>Race Day</button>
+            </div>
+            {pickerMode === "start" ? (
+              <>
+                <span className="dp-label">Start date</span>
+                <input className="dinput" type="date" value={pendingStart} onChange={e => onStartChange(e.target.value)} />
+                {pendingStart && <span className="dp-preview race-p">🏁 Race: {fmtShort(pendingRace)}</span>}
+              </>
+            ) : (
+              <>
+                <span className="dp-label">Race day</span>
+                <input className="dinput" type="date" value={pendingRace} onChange={e => onRaceChange(e.target.value)} />
+                {pendingRace && <span className="dp-preview start-p">📅 Start: {fmtShort(pendingStart)}</span>}
+              </>
+            )}
+            <button className="applybtn" onClick={applyDates}>Apply</button>
+            <button className="cancelbtn" onClick={() => setShowPicker(false)}>Cancel</button>
+          </div>
+        )}
+      </div>
+
+      <div className="navtabs">
+        <button className={"ntab " + (view === "schedule" ? "active" : "")} onClick={() => setView("schedule")}>Schedule</button>
+        <button className={"ntab " + (view === "stats" ? "active" : "")} onClick={() => setView("stats")}>Stats</button>
+      </div>
+
+      <div className="content">
+        {view === "schedule" && weeks.map(week => {
+          const ws = week.sessions[0]?.date;
+          const we = week.sessions[week.sessions.length - 1]?.date;
+          const isRaceWeek = week.weekNum === 28;
+          return (
+            <div key={week.weekNum} className="wblk">
+              <div className="whdr">
+                <div className={"week-label " + (isRaceWeek ? "race-week" : "")}>
+                  {isRaceWeek ? "🏁 Race Week" : "Week " + week.weekNum}
+                </div>
+                <div className="whdr-line" />
+                {ws && <div className="week-dates">{fmtShort(ws)} – {fmtShort(we)}</div>}
+              </div>
+              {week.sessions.map(session => {
+                const ts = typeStyles[session.type] || typeStyles.run;
+                const isDone = completed[session.idx];
+                const isCur = session.idx === curIdx;
+                const isToday = session.date === todayStr;
+                const isRace = session.type === "race";
+                return (
+                  <div key={session.idx}
+                    className={"scard " + (isDone ? "done " : "") + (isCur ? "cur " : "") + (isRace ? "race-card" : "")}
+                    onClick={() => toggleDone(session.idx)}>
+                    <div className={"chk " + (isDone ? "on" : "")}>{isDone ? "✓" : ""}</div>
+                    <div className="smain">
+                      <div className="smeta">
+                        <span className="dchip">{fmtDay(session.date)}, {fmtShort(session.date)}</span>
+                        <span className="tbadge" style={{ background: ts.bg, color: ts.text, borderColor: ts.border + "55" }}>{ts.label}</span>
+                        {isToday && <span className="today-chip">Today</span>}
+                      </div>
+                      <div className={"wname " + (isRace ? "race-wname" : "")}>{session.workout}</div>
+                      {notes[session.idx] && <div className="ntxt">📝 {notes[session.idx]}</div>}
+                      {editingNote === session.idx ? (
+                        <div className="nwrap" onClick={e => e.stopPropagation()}>
+                          <input className="ninput" value={noteText} onChange={e => setNoteText(e.target.value)}
+                            placeholder="Add a note..." onKeyDown={e => e.key === "Enter" && saveNote(session.idx)} autoFocus />
+                          <button className="nsave" onClick={() => saveNote(session.idx)}>Save</button>
+                        </div>
+                      ) : (
+                        <button className="nbtn" onClick={e => { e.stopPropagation(); setNoteText(notes[session.idx] || ""); setEditingNote(session.idx); }}>
+                          {notes[session.idx] ? "Edit Note" : "+ Note"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+
+        {view === "stats" && (
+          <div>
+            <div className="rcd">
+              <div className="rcnum">{daysLeft}</div>
+              <div className="rclbl">Days Until Race Day &middot; {fmtFull(raceDate)}</div>
+            </div>
+            <div className="sc">
+              <div className="sct">Overall Progress</div>
+              <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
+                <div><div className="bnum">{done}</div><div className="blbl">Workouts Done</div></div>
+                <div><div className="bnum" style={{ color: "#43a047" }}>{total - done}</div><div className="blbl">Remaining</div></div>
+                <div><div className="bnum" style={{ color: "#e65100" }}>{pct}%</div><div className="blbl">Complete</div></div>
+              </div>
+            </div>
+            <div className="sc">
+              <div className="sct">Workout Breakdown</div>
+              <div className="tbd">
+                {Object.entries(typeStyles).map(([type, ts]) => {
+                  const count = trainingData.filter(s => s.type === type).length;
+                  const doneCount = trainingData.filter((s, i) => s.type === type && completed[i]).length;
+                  return (
+                    <div key={type} className="trow">
+                      <div className="tdot" style={{ background: ts.border }} />
+                      <div className="tinfo">
+                        <div className="tname">{ts.label}</div>
+                        <div className="tcnt">{doneCount} / {count}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="sc">
+              <div className="sct">Training Timeline</div>
+              <div className="timeline-wrap">
+                {trainingData.map((s, i) => {
+                  const ts = typeStyles[s.type] || typeStyles.run;
+                  return <div key={i} title={fmtShort(s.date) + ": " + s.workout} className="timeline-sq"
+                    style={{ background: completed[i] ? ts.border : "#dde3ed", opacity: completed[i] ? 1 : 0.6 }} />;
+                })}
+              </div>
+              <div className="timeline-legend">Each square = one workout · Colored when complete</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
