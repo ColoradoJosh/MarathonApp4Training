@@ -60,28 +60,51 @@
     .week-label.race-week { background: #c62828; }
     .whdr-line { flex: 1; height: 1px; background: #dde3ed; }
     .week-dates { font-family: 'Barlow', sans-serif; font-size: 0.62rem; color: #aaa; }
-    .scard { background: #fff; border: 1.5px solid #e0e8f0; border-radius: 6px; padding: 0.8rem 0.9rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.8rem; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-    .scard:active { background: #f5f8ff; }
-    .scard.done { opacity: 0.4; }
+    .scard { background: #fff; border: 1.5px solid #e0e8f0; border-radius: 6px; padding: 0.8rem 0.9rem; margin-bottom: 0.4rem; display: flex; align-items: flex-start; gap: 0.8rem; transition: all 0.15s; position: relative; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+    .scard.done { opacity: 0.5; }
     .scard.done .wname { text-decoration: line-through; }
     .scard.cur { border-color: #1565c0; background: #f0f6ff; }
     .scard.cur::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #1565c0; }
     .scard.race-card { border-color: #c62828; background: #fff8f8; }
     .scard.race-card::before { background: #c62828; }
-    .chk { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ccd8e8; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 12px; font-weight: 700; color: transparent; }
+    .chk { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ccd8e8; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 12px; font-weight: 700; color: transparent; cursor: pointer; margin-top: 2px; }
     .chk.on { background: #43a047; border-color: #43a047; color: #fff; }
     .smain { flex: 1; min-width: 0; }
     .smeta { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.2rem; flex-wrap: wrap; }
     .dchip { font-family: 'Barlow', sans-serif; font-size: 0.65rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
     .tbadge { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.1rem 0.45rem; border-radius: 2px; border-width: 1px; border-style: solid; }
     .today-chip { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: #1565c0; color: #fff; padding: 0.1rem 0.45rem; border-radius: 2px; }
-    .wname { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; letter-spacing: 0.02em; text-transform: uppercase; }
+    .wname { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; letter-spacing: 0.02em; text-transform: uppercase; margin-bottom: 0.5rem; }
     .race-wname { color: #c62828; }
-    .ntxt { font-family: 'Barlow', sans-serif; font-size: 0.68rem; color: #888; margin-top: 0.2rem; font-style: italic; }
-    .nbtn { background: none; border: 1.5px solid #dde3ed; border-radius: 3px; color: #aaa; padding: 0.1rem 0.5rem; font-family: 'Barlow', sans-serif; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; margin-top: 0.3rem; }
+
+    /* ── LOG SECTION ── */
+    .log-section { margin-top: 0.5rem; border-top: 1px solid #edf2f7; padding-top: 0.55rem; }
+    .log-fields { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end; }
+    .log-field { display: flex; flex-direction: column; gap: 0.2rem; min-width: 90px; flex: 1; }
+    .log-field.wide { min-width: 130px; flex: 2; }
+    .log-lbl { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; }
+    .log-input { border: 1.5px solid #dde3ed; border-radius: 4px; padding: 0.32rem 0.55rem; font-family: 'Barlow', sans-serif; font-size: 0.82rem; color: #1a1a2e; outline: none; width: 100%; background: #fafcff; transition: border-color 0.15s; }
+    .log-input:focus { border-color: #1565c0; background: #fff; }
+    .log-input.orange:focus { border-color: #e65100; }
+    .log-saved { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; }
+    .log-pill { display: flex; align-items: center; gap: 0.3rem; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 20px; }
+    .log-pill.blue { background: #e3f2fd; color: #1565c0; }
+    .log-pill.green { background: #e8f5e9; color: #2e7d32; }
+    .log-pill.orange { background: #fff3e0; color: #e65100; }
+    .log-pill.purple { background: #f3e5f5; color: #6a1b9a; }
+    .log-save-btn { background: #1565c0; color: #fff; border: none; border-radius: 4px; padding: 0.32rem 0.8rem; font-family: 'Barlow', sans-serif; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; align-self: flex-end; white-space: nowrap; }
+    .log-save-btn.orange { background: #e65100; }
+    .log-edit-btn { background: none; border: 1.5px solid #dde3ed; border-radius: 3px; color: #aaa; padding: 0.15rem 0.5rem; font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; }
+    .log-divider { height: 1px; background: #f0f4f8; margin: 0.5rem 0; }
+
+    /* ── NOTE ── */
+    .ntxt { font-family: 'Barlow', sans-serif; font-size: 0.68rem; color: #888; margin-top: 0.35rem; font-style: italic; }
+    .nbtn { background: none; border: 1.5px solid #dde3ed; border-radius: 3px; color: #aaa; padding: 0.1rem 0.5rem; font-family: 'Barlow', sans-serif; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; margin-top: 0.35rem; display: inline-block; }
     .nwrap { margin-top: 0.45rem; display: flex; gap: 0.45rem; }
     .ninput { flex: 1; border: 1.5px solid #1565c0; border-radius: 4px; padding: 0.3rem 0.55rem; font-family: 'Barlow', sans-serif; font-size: 0.75rem; outline: none; color: #1a1a2e; }
     .nsave { background: #1565c0; color: #fff; border: none; border-radius: 4px; padding: 0.3rem 0.75rem; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+
+    /* ── STATS ── */
     .sc { background: #fff; border: 1.5px solid #e0e8f0; border-radius: 6px; padding: 1.1rem 1.2rem; margin-bottom: 0.9rem; }
     .sct { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #1565c0; margin-bottom: 0.9rem; padding-bottom: 0.55rem; border-bottom: 2px solid #e3f2fd; }
     .bnum { font-family: 'Barlow Condensed', sans-serif; font-size: 3rem; font-weight: 900; color: #1565c0; line-height: 1; }
@@ -99,6 +122,13 @@
     .timeline-wrap { display: flex; flex-wrap: wrap; gap: 3px; }
     .timeline-sq { width: 13px; height: 13px; border-radius: 2px; }
     .timeline-legend { font-family: 'Barlow', sans-serif; font-size: 0.6rem; color: #aaa; margin-top: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* MM history table */
+    .mm-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .mm-table th { font-family: 'Barlow', sans-serif; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; text-align: left; padding: 0.3rem 0.5rem; border-bottom: 2px solid #e3f2fd; }
+    .mm-table td { font-family: 'Barlow', sans-serif; font-size: 0.75rem; color: #333; padding: 0.45rem 0.5rem; border-bottom: 1px solid #f0f4f8; }
+    .mm-table tr:last-child td { border-bottom: none; }
+    .mm-table td:first-child { color: #888; font-size: 0.65rem; }
   </style>
 </head>
 <body>
@@ -107,7 +137,7 @@
 const { useState, useEffect } = React;
 
 const DEFAULT_START = "2026-01-06";
-const STORAGE_KEY = "marathon-tracker-v2";
+const STORAGE_KEY = "marathon-tracker-v3";
 const RACE_OFFSET = 193;
 
 const rawSchedule = [
@@ -213,11 +243,9 @@ function addDays(dateStr, days) {
   d.setDate(d.getDate() + days);
   return d.toISOString().split("T")[0];
 }
-
 function buildTrainingData(startDate) {
   return rawSchedule.map((s) => ({ ...s, date: addDays(startDate, s.offset) }));
 }
-
 function fmtShort(dateStr) {
   return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
@@ -235,17 +263,211 @@ function getCurrentIdx(data) {
   return data.length - 1;
 }
 
+// ── LOG PANEL COMPONENTS ──
+
+function CardioLog({ idx, logs, setLogs }) {
+  const saved = logs[idx] || {};
+  const [editing, setEditing] = useState(false);
+  const [miles, setMiles] = useState(saved.miles || "");
+
+  const save = (e) => {
+    e.stopPropagation();
+    setLogs(p => ({ ...p, [idx]: { miles } }));
+    setEditing(false);
+  };
+
+  if (!editing && saved.miles) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <div className="log-saved">
+          <span className="log-pill blue">🏃 {saved.miles} mi</span>
+          <button className="log-edit-btn" onClick={() => { setMiles(saved.miles); setEditing(true); }}>Edit</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Miles</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="log-section" onClick={e => e.stopPropagation()}>
+      <div className="log-fields">
+        <div className="log-field">
+          <label className="log-lbl">Miles Completed</label>
+          <input className="log-input" type="number" step="0.1" min="0" placeholder="e.g. 2.5"
+            value={miles} onChange={e => setMiles(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && save(e)} autoFocus />
+        </div>
+        <button className="log-save-btn" onClick={save}>Save</button>
+        <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function RunLog({ idx, logs, setLogs }) {
+  const saved = logs[idx] || {};
+  const [editing, setEditing] = useState(false);
+  const [pace, setPace] = useState(saved.pace || "");
+
+  const save = (e) => {
+    e.stopPropagation();
+    setLogs(p => ({ ...p, [idx]: { pace } }));
+    setEditing(false);
+  };
+
+  if (!editing && saved.pace) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <div className="log-saved">
+          <span className="log-pill green">⏱ {saved.pace} /mi avg</span>
+          <button className="log-edit-btn" onClick={() => { setPace(saved.pace); setEditing(true); }}>Edit</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Pace</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="log-section" onClick={e => e.stopPropagation()}>
+      <div className="log-fields">
+        <div className="log-field wide">
+          <label className="log-lbl">Avg Pace (mm:ss /mi)</label>
+          <input className="log-input" type="text" placeholder="e.g. 12:30"
+            value={pace} onChange={e => setPace(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && save(e)} autoFocus />
+        </div>
+        <button className="log-save-btn" onClick={save}>Save</button>
+        <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function LongRunLog({ idx, logs, setLogs }) {
+  const saved = logs[idx] || {};
+  const [editing, setEditing] = useState(false);
+  const [pace, setPace] = useState(saved.pace || "");
+
+  const save = (e) => {
+    e.stopPropagation();
+    setLogs(p => ({ ...p, [idx]: { pace } }));
+    setEditing(false);
+  };
+
+  if (!editing && saved.pace) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <div className="log-saved">
+          <span className="log-pill purple">⏱ {saved.pace} /mi avg</span>
+          <button className="log-edit-btn" onClick={() => { setPace(saved.pace); setEditing(true); }}>Edit</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Pace</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="log-section" onClick={e => e.stopPropagation()}>
+      <div className="log-fields">
+        <div className="log-field wide">
+          <label className="log-lbl">Avg Pace (mm:ss /mi)</label>
+          <input className="log-input" type="text" placeholder="e.g. 14:00"
+            value={pace} onChange={e => setPace(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && save(e)} autoFocus />
+        </div>
+        <button className="log-save-btn" style={{ background: "#6a1b9a" }} onClick={save}>Save</button>
+        <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function MagicMileLog({ idx, logs, setLogs }) {
+  const saved = logs[idx] || {};
+  const [editing, setEditing] = useState(false);
+  const [mmTime, setMmTime] = useState(saved.mmTime || "");
+  const [pace, setPace] = useState(saved.pace || "");
+
+  const save = (e) => {
+    e.stopPropagation();
+    setLogs(p => ({ ...p, [idx]: { mmTime, pace } }));
+    setEditing(false);
+  };
+
+  if (!editing && (saved.mmTime || saved.pace)) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <div className="log-saved">
+          {saved.mmTime && <span className="log-pill orange">⚡ MM: {saved.mmTime}</span>}
+          {saved.pace   && <span className="log-pill orange">⏱ {saved.pace} /mi avg</span>}
+          <button className="log-edit-btn" onClick={() => { setMmTime(saved.mmTime || ""); setPace(saved.pace || ""); setEditing(true); }}>Edit</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <div className="log-section" onClick={e => e.stopPropagation()}>
+        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Magic Mile</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="log-section" onClick={e => e.stopPropagation()}>
+      <div className="log-fields">
+        <div className="log-field">
+          <label className="log-lbl">Magic Mile Time (mm:ss)</label>
+          <input className="log-input orange" type="text" placeholder="e.g. 10:45"
+            value={mmTime} onChange={e => setMmTime(e.target.value)} autoFocus />
+        </div>
+        <div className="log-field">
+          <label className="log-lbl">Remaining Run Pace</label>
+          <input className="log-input orange" type="text" placeholder="e.g. 13:30"
+            value={pace} onChange={e => setPace(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && save(e)} />
+        </div>
+        <button className="log-save-btn orange" onClick={save}>Save</button>
+        <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [startDate, setStartDate] = useState(DEFAULT_START);
   const [completed, setCompleted] = useState({});
-  const [notes, setNotes] = useState({});
+  const [notes, setNotes]         = useState({});
+  const [workoutLogs, setWorkoutLogs] = useState({});
   const [editingNote, setEditingNote] = useState(null);
-  const [noteText, setNoteText] = useState("");
-  const [view, setView] = useState("schedule");
+  const [noteText, setNoteText]   = useState("");
+  const [view, setView]           = useState("schedule");
   const [showPicker, setShowPicker] = useState(false);
   const [pickerMode, setPickerMode] = useState("start");
   const [pendingStart, setPendingStart] = useState(DEFAULT_START);
-  const [pendingRace, setPendingRace] = useState(addDays(DEFAULT_START, RACE_OFFSET));
+  const [pendingRace, setPendingRace]   = useState(addDays(DEFAULT_START, RACE_OFFSET));
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -255,6 +477,7 @@ function App() {
         const p = JSON.parse(saved);
         setCompleted(p.completed || {});
         setNotes(p.notes || {});
+        setWorkoutLogs(p.workoutLogs || {});
         if (p.startDate) {
           setStartDate(p.startDate);
           setPendingStart(p.startDate);
@@ -267,8 +490,13 @@ function App() {
 
   useEffect(() => {
     if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, notes, startDate })); } catch(e) {}
-  }, [completed, notes, startDate, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, notes, workoutLogs, startDate })); } catch(e) {}
+  }, [completed, notes, workoutLogs, startDate, loaded]);
+
+  const setLogsForIdx = (idx) => (updater) => setWorkoutLogs(prev => {
+    const next = typeof updater === "function" ? updater(prev) : updater;
+    return next;
+  });
 
   const onStartChange = (v) => { setPendingStart(v); if (v) setPendingRace(addDays(v, RACE_OFFSET)); };
   const onRaceChange  = (v) => { setPendingRace(v); if (v) setPendingStart(addDays(v, -RACE_OFFSET)); };
@@ -278,8 +506,8 @@ function App() {
   const trainingData = buildTrainingData(startDate);
   const raceDate = addDays(startDate, RACE_OFFSET);
   const total = trainingData.length;
-  const done = Object.values(completed).filter(Boolean).length;
-  const pct = Math.round((done / total) * 100);
+  const done  = Object.values(completed).filter(Boolean).length;
+  const pct   = Math.round((done / total) * 100);
   const curIdx = getCurrentIdx(trainingData);
   const daysLeft = Math.max(0, Math.ceil((new Date(raceDate + "T12:00:00") - new Date()) / 86400000));
   const todayStr = new Date().toISOString().split("T")[0];
@@ -287,12 +515,17 @@ function App() {
   const toggleDone = (i) => setCompleted(p => ({ ...p, [i]: !p[i] }));
   const saveNote = (i) => { setNotes(p => ({ ...p, [i]: noteText })); setEditingNote(null); setNoteText(""); };
 
-  let weeks = [];
-  let curWeek = null;
+  let weeks = [], curWeek = null;
   trainingData.forEach((s, i) => {
     if (s.week !== null) { curWeek = { weekNum: s.week, sessions: [] }; weeks.push(curWeek); }
     if (curWeek) curWeek.sessions.push({ ...s, idx: i });
   });
+
+  // Collect magic mile history for stats
+  const mmHistory = trainingData
+    .map((s, i) => ({ ...s, idx: i }))
+    .filter(s => s.type === "special" && workoutLogs[s.idx] && (workoutLogs[s.idx].mmTime || workoutLogs[s.idx].pace))
+    .map(s => ({ date: s.date, ...workoutLogs[s.idx] }));
 
   return (
     <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", minHeight: "100vh" }}>
@@ -320,7 +553,6 @@ function App() {
             🏁 Race: {fmtShort(raceDate)}
           </button>
         </div>
-
         {showPicker && (
           <div className="dppanel">
             <div className="mode-toggle">
@@ -352,6 +584,7 @@ function App() {
       </div>
 
       <div className="content">
+
         {view === "schedule" && weeks.map(week => {
           const ws = week.sessions[0]?.date;
           const we = week.sessions[week.sessions.length - 1]?.date;
@@ -365,17 +598,23 @@ function App() {
                 <div className="whdr-line" />
                 {ws && <div className="week-dates">{fmtShort(ws)} – {fmtShort(we)}</div>}
               </div>
+
               {week.sessions.map(session => {
                 const ts = typeStyles[session.type] || typeStyles.run;
-                const isDone = completed[session.idx];
-                const isCur = session.idx === curIdx;
+                const isDone  = completed[session.idx];
+                const isCur   = session.idx === curIdx;
                 const isToday = session.date === todayStr;
-                const isRace = session.type === "race";
+                const isRace  = session.type === "race";
+
                 return (
                   <div key={session.idx}
-                    className={"scard " + (isDone ? "done " : "") + (isCur ? "cur " : "") + (isRace ? "race-card" : "")}
-                    onClick={() => toggleDone(session.idx)}>
-                    <div className={"chk " + (isDone ? "on" : "")}>{isDone ? "✓" : ""}</div>
+                    className={"scard " + (isDone ? "done " : "") + (isCur ? "cur " : "") + (isRace ? "race-card" : "")}>
+
+                    {/* Checkbox — clicking only toggles done */}
+                    <div className={"chk " + (isDone ? "on" : "")} onClick={() => toggleDone(session.idx)}>
+                      {isDone ? "✓" : ""}
+                    </div>
+
                     <div className="smain">
                       <div className="smeta">
                         <span className="dchip">{fmtDay(session.date)}, {fmtShort(session.date)}</span>
@@ -383,6 +622,22 @@ function App() {
                         {isToday && <span className="today-chip">Today</span>}
                       </div>
                       <div className={"wname " + (isRace ? "race-wname" : "")}>{session.workout}</div>
+
+                      {/* ── TYPE-SPECIFIC LOG PANELS ── */}
+                      {session.type === "cardio" && (
+                        <CardioLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                      )}
+                      {(session.type === "run") && (
+                        <RunLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                      )}
+                      {(session.type === "long") && (
+                        <LongRunLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                      )}
+                      {session.type === "special" && (
+                        <MagicMileLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                      )}
+
+                      {/* Note */}
                       {notes[session.idx] && <div className="ntxt">📝 {notes[session.idx]}</div>}
                       {editingNote === session.idx ? (
                         <div className="nwrap" onClick={e => e.stopPropagation()}>
@@ -409,6 +664,7 @@ function App() {
               <div className="rcnum">{daysLeft}</div>
               <div className="rclbl">Days Until Race Day &middot; {fmtFull(raceDate)}</div>
             </div>
+
             <div className="sc">
               <div className="sct">Overall Progress</div>
               <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
@@ -417,6 +673,7 @@ function App() {
                 <div><div className="bnum" style={{ color: "#e65100" }}>{pct}%</div><div className="blbl">Complete</div></div>
               </div>
             </div>
+
             <div className="sc">
               <div className="sct">Workout Breakdown</div>
               <div className="tbd">
@@ -435,6 +692,31 @@ function App() {
                 })}
               </div>
             </div>
+
+            {mmHistory.length > 0 && (
+              <div className="sc">
+                <div className="sct">Magic Mile History</div>
+                <table className="mm-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>MM Time</th>
+                      <th>Run Pace</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mmHistory.map((mm, i) => (
+                      <tr key={i}>
+                        <td>{fmtShort(mm.date)}</td>
+                        <td>{mm.mmTime ? <strong style={{ color: "#e65100" }}>{mm.mmTime}</strong> : "—"}</td>
+                        <td>{mm.pace ? mm.pace + " /mi" : "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
             <div className="sc">
               <div className="sct">Training Timeline</div>
               <div className="timeline-wrap">
