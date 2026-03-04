@@ -276,7 +276,7 @@ function fmtDay(dateStr) {
 function getCurrentIdx(data) {
   const today = new Date();
   for (let i = 0; i < data.length; i++) {
-    if (new Date(data[i].date + "T12:00:00") >= today) return i;
+    if (new Date(data[i].date + "T00:00:00") >= today) return i;
   }
   return data.length - 1;
 }
