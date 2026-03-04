@@ -129,6 +129,24 @@
     .mm-table td { font-family: 'Barlow', sans-serif; font-size: 0.75rem; color: #333; padding: 0.45rem 0.5rem; border-bottom: 1px solid #f0f4f8; }
     .mm-table tr:last-child td { border-bottom: none; }
     .mm-table td:first-child { color: #888; font-size: 0.65rem; }
+
+    /* ── EXPORT/IMPORT ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1.2rem; }
+    .modal-box { background: #fff; border-radius: 10px; padding: 1.5rem; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #1565c0; margin-bottom: 0.3rem; }
+    .modal-sub { font-family: 'Barlow', sans-serif; font-size: 0.72rem; color: #888; margin-bottom: 1.1rem; line-height: 1.5; }
+    .modal-textarea { width: 100%; border: 2px solid #dde3ed; border-radius: 6px; padding: 0.65rem 0.75rem; font-family: 'Barlow', sans-serif; font-size: 0.72rem; color: #1a1a2e; outline: none; resize: none; height: 120px; background: #fafcff; }
+    .modal-textarea:focus { border-color: #1565c0; }
+    .modal-btns { display: flex; gap: 0.6rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .modal-btn { flex: 1; padding: 0.6rem 0.9rem; border-radius: 5px; font-family: 'Barlow', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border: none; min-width: 80px; }
+    .modal-btn.primary { background: #1565c0; color: #fff; }
+    .modal-btn.success { background: #43a047; color: #fff; }
+    .modal-btn.danger { background: #c62828; color: #fff; }
+    .modal-btn.ghost { background: none; border: 2px solid #dde3ed; color: #888; }
+    .modal-status { font-family: 'Barlow', sans-serif; font-size: 0.7rem; font-weight: 600; margin-top: 0.6rem; padding: 0.4rem 0.7rem; border-radius: 4px; }
+    .modal-status.ok { background: #e8f5e9; color: #2e7d32; }
+    .modal-status.err { background: #ffebee; color: #c62828; }
+    .data-btn { display: flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.8rem; border-radius: 3px; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); color: #fff; letter-spacing: 0.04em; text-transform: uppercase; }
   </style>
 </head>
 <body>
@@ -137,7 +155,7 @@
 const { useState, useEffect } = React;
 
 const DEFAULT_START = "2026-01-06";
-const STORAGE_KEY = "marathon-tracker-v3";
+const STORAGE_KEY = "marathon-tracker-v4";
 const RACE_OFFSET = 193;
 
 const rawSchedule = [
@@ -311,23 +329,55 @@ function CardioLog({ idx, logs, setLogs }) {
   );
 }
 
-function RunLog({ idx, logs, setLogs }) {
+// Parse time string (h:mm:ss or mm:ss) to total minutes
+function parseTimeToMins(t) {
+  if (!t) return null;
+  const parts = t.trim().split(":").map(Number);
+  if (parts.some(isNaN)) return null;
+  if (parts.length === 3) return parts[0] * 60 + parts[1] + parts[2] / 60;
+  if (parts.length === 2) return parts[0] + parts[1] / 60;
+  return null;
+}
+
+function calcPace(totalTimeMmSs, miles) {
+  const totalMins = parseTimeToMins(totalTimeMmSs);
+  if (!totalMins || !miles || parseFloat(miles) <= 0) return null;
+  const paceMins = totalMins / parseFloat(miles);
+  const paceMin = Math.floor(paceMins);
+  const paceSec = Math.round((paceMins - paceMin) * 60);
+  return paceMin + ":" + String(paceSec).padStart(2, "0");
+}
+
+function PacePreview({ time, miles, color }) {
+  const pace = calcPace(time, miles);
+  if (!pace) return null;
+  return (
+    <div style={{ marginTop: "0.4rem", fontFamily: "'Barlow', sans-serif", fontSize: "0.7rem", color: color || "#2e7d32", fontWeight: 600 }}>
+      → Avg pace: {pace} /mi
+    </div>
+  );
+}
+
+function RunLog({ idx, logs, setLogs, distanceMiles }) {
   const saved = logs[idx] || {};
   const [editing, setEditing] = useState(false);
-  const [pace, setPace] = useState(saved.pace || "");
+  const [totalTime, setTotalTime] = useState(saved.totalTime || "");
+  const miles = distanceMiles;
 
   const save = (e) => {
     e.stopPropagation();
-    setLogs(p => ({ ...p, [idx]: { pace } }));
+    const pace = calcPace(totalTime, miles);
+    setLogs(p => ({ ...p, [idx]: { totalTime, pace } }));
     setEditing(false);
   };
 
-  if (!editing && saved.pace) {
+  if (!editing && saved.totalTime) {
     return (
       <div className="log-section" onClick={e => e.stopPropagation()}>
         <div className="log-saved">
-          <span className="log-pill green">⏱ {saved.pace} /mi avg</span>
-          <button className="log-edit-btn" onClick={() => { setPace(saved.pace); setEditing(true); }}>Edit</button>
+          <span className="log-pill green">🕐 {saved.totalTime}</span>
+          {saved.pace && <span className="log-pill green">⏱ {saved.pace} /mi avg</span>}
+          <button className="log-edit-btn" onClick={() => { setTotalTime(saved.totalTime || ""); setEditing(true); }}>Edit</button>
         </div>
       </div>
     );
@@ -336,7 +386,7 @@ function RunLog({ idx, logs, setLogs }) {
   if (!editing) {
     return (
       <div className="log-section" onClick={e => e.stopPropagation()}>
-        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Pace</button>
+        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Run Time</button>
       </div>
     );
   }
@@ -345,35 +395,39 @@ function RunLog({ idx, logs, setLogs }) {
     <div className="log-section" onClick={e => e.stopPropagation()}>
       <div className="log-fields">
         <div className="log-field wide">
-          <label className="log-lbl">Avg Pace (mm:ss /mi)</label>
-          <input className="log-input" type="text" placeholder="e.g. 12:30"
-            value={pace} onChange={e => setPace(e.target.value)}
+          <label className="log-lbl">Total Time (h:mm:ss or mm:ss)</label>
+          <input className="log-input" type="text" placeholder="e.g. 1:05:30"
+            value={totalTime} onChange={e => setTotalTime(e.target.value)}
             onKeyDown={e => e.key === "Enter" && save(e)} autoFocus />
         </div>
         <button className="log-save-btn" onClick={save}>Save</button>
         <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
       </div>
+      <PacePreview time={totalTime} miles={miles} color="#2e7d32" />
     </div>
   );
 }
 
-function LongRunLog({ idx, logs, setLogs }) {
+function LongRunLog({ idx, logs, setLogs, distanceMiles }) {
   const saved = logs[idx] || {};
   const [editing, setEditing] = useState(false);
-  const [pace, setPace] = useState(saved.pace || "");
+  const [totalTime, setTotalTime] = useState(saved.totalTime || "");
+  const miles = distanceMiles;
 
   const save = (e) => {
     e.stopPropagation();
-    setLogs(p => ({ ...p, [idx]: { pace } }));
+    const pace = calcPace(totalTime, miles);
+    setLogs(p => ({ ...p, [idx]: { totalTime, pace } }));
     setEditing(false);
   };
 
-  if (!editing && saved.pace) {
+  if (!editing && saved.totalTime) {
     return (
       <div className="log-section" onClick={e => e.stopPropagation()}>
         <div className="log-saved">
-          <span className="log-pill purple">⏱ {saved.pace} /mi avg</span>
-          <button className="log-edit-btn" onClick={() => { setPace(saved.pace); setEditing(true); }}>Edit</button>
+          <span className="log-pill purple">🕐 {saved.totalTime}</span>
+          {saved.pace && <span className="log-pill purple">⏱ {saved.pace} /mi avg</span>}
+          <button className="log-edit-btn" onClick={() => { setTotalTime(saved.totalTime || ""); setEditing(true); }}>Edit</button>
         </div>
       </div>
     );
@@ -382,7 +436,7 @@ function LongRunLog({ idx, logs, setLogs }) {
   if (!editing) {
     return (
       <div className="log-section" onClick={e => e.stopPropagation()}>
-        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Pace</button>
+        <button className="nbtn" onClick={() => setEditing(true)}>+ Log Run Time</button>
       </div>
     );
   }
@@ -391,37 +445,43 @@ function LongRunLog({ idx, logs, setLogs }) {
     <div className="log-section" onClick={e => e.stopPropagation()}>
       <div className="log-fields">
         <div className="log-field wide">
-          <label className="log-lbl">Avg Pace (mm:ss /mi)</label>
-          <input className="log-input" type="text" placeholder="e.g. 14:00"
-            value={pace} onChange={e => setPace(e.target.value)}
+          <label className="log-lbl">Total Time (h:mm:ss or mm:ss)</label>
+          <input className="log-input" type="text" placeholder="e.g. 4:30:00"
+            value={totalTime} onChange={e => setTotalTime(e.target.value)}
             onKeyDown={e => e.key === "Enter" && save(e)} autoFocus />
         </div>
         <button className="log-save-btn" style={{ background: "#6a1b9a" }} onClick={save}>Save</button>
         <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
       </div>
+      <PacePreview time={totalTime} miles={miles} color="#6a1b9a" />
     </div>
   );
 }
 
-function MagicMileLog({ idx, logs, setLogs }) {
+function MagicMileLog({ idx, logs, setLogs, distanceMiles }) {
   const saved = logs[idx] || {};
   const [editing, setEditing] = useState(false);
   const [mmTime, setMmTime] = useState(saved.mmTime || "");
-  const [pace, setPace] = useState(saved.pace || "");
+  const [remainTime, setRemainTime] = useState(saved.remainTime || "");
+  // remaining miles = total distance - 1 magic mile
+  const remainMiles = distanceMiles ? Math.max(0, parseFloat(distanceMiles) - 1) : null;
+  const remainPace = remainMiles > 0 ? calcPace(remainTime, remainMiles) : null;
 
   const save = (e) => {
     e.stopPropagation();
-    setLogs(p => ({ ...p, [idx]: { mmTime, pace } }));
+    const pace = remainMiles > 0 ? calcPace(remainTime, remainMiles) : null;
+    setLogs(p => ({ ...p, [idx]: { mmTime, remainTime, pace } }));
     setEditing(false);
   };
 
-  if (!editing && (saved.mmTime || saved.pace)) {
+  if (!editing && (saved.mmTime || saved.remainTime)) {
     return (
       <div className="log-section" onClick={e => e.stopPropagation()}>
         <div className="log-saved">
-          {saved.mmTime && <span className="log-pill orange">⚡ MM: {saved.mmTime}</span>}
-          {saved.pace   && <span className="log-pill orange">⏱ {saved.pace} /mi avg</span>}
-          <button className="log-edit-btn" onClick={() => { setMmTime(saved.mmTime || ""); setPace(saved.pace || ""); setEditing(true); }}>Edit</button>
+          {saved.mmTime    && <span className="log-pill orange">⚡ MM: {saved.mmTime}</span>}
+          {saved.remainTime && <span className="log-pill orange">🕐 Rem: {saved.remainTime}</span>}
+          {saved.pace      && <span className="log-pill orange">⏱ {saved.pace} /mi rem. avg</span>}
+          <button className="log-edit-btn" onClick={() => { setMmTime(saved.mmTime || ""); setRemainTime(saved.remainTime || ""); setEditing(true); }}>Edit</button>
         </div>
       </div>
     );
@@ -444,14 +504,19 @@ function MagicMileLog({ idx, logs, setLogs }) {
             value={mmTime} onChange={e => setMmTime(e.target.value)} autoFocus />
         </div>
         <div className="log-field">
-          <label className="log-lbl">Remaining Run Pace</label>
-          <input className="log-input orange" type="text" placeholder="e.g. 13:30"
-            value={pace} onChange={e => setPace(e.target.value)}
+          <label className="log-lbl">Remaining Run Time ({remainMiles ? remainMiles.toFixed(1) : "?"} mi)</label>
+          <input className="log-input orange" type="text" placeholder="e.g. 1:10:00"
+            value={remainTime} onChange={e => setRemainTime(e.target.value)}
             onKeyDown={e => e.key === "Enter" && save(e)} />
         </div>
         <button className="log-save-btn orange" onClick={save}>Save</button>
         <button className="log-edit-btn" onClick={e => { e.stopPropagation(); setEditing(false); }}>Cancel</button>
       </div>
+      {remainPace && (
+        <div style={{ marginTop: "0.4rem", fontFamily: "'Barlow', sans-serif", fontSize: "0.7rem", color: "#e65100", fontWeight: 600 }}>
+          → Remaining avg pace: {remainPace} /mi
+        </div>
+      )}
     </div>
   );
 }
@@ -469,6 +534,10 @@ function App() {
   const [pendingStart, setPendingStart] = useState(DEFAULT_START);
   const [pendingRace, setPendingRace]   = useState(addDays(DEFAULT_START, RACE_OFFSET));
   const [loaded, setLoaded] = useState(false);
+  const [showDataModal, setShowDataModal] = useState(false);
+  const [dataModalMode, setDataModalMode] = useState("export"); // "export" | "import"
+  const [importText, setImportText] = useState("");
+  const [modalStatus, setModalStatus] = useState(null);
 
   useEffect(() => {
     try {
@@ -503,6 +572,51 @@ function App() {
   const openPicker = (mode) => { setPickerMode(mode); setPendingStart(startDate); setPendingRace(addDays(startDate, RACE_OFFSET)); setShowPicker(true); };
   const applyDates = () => { setStartDate(pendingStart); setShowPicker(false); };
 
+  const openExport = () => {
+    setDataModalMode("export");
+    setModalStatus(null);
+    setImportText("");
+    setShowDataModal(true);
+  };
+  const openImport = () => {
+    setDataModalMode("import");
+    setModalStatus(null);
+    setImportText("");
+    setShowDataModal(true);
+  };
+  const getExportJson = () => {
+    return JSON.stringify({ completed, notes, workoutLogs, startDate }, null, 2);
+  };
+  const copyExport = () => {
+    try {
+      const json = getExportJson();
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(json).then(() => setModalStatus({ ok: true, msg: "Copied to clipboard! Paste it somewhere safe." }));
+      } else {
+        const el = document.createElement("textarea");
+        el.value = json;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setModalStatus({ ok: true, msg: "Copied to clipboard! Paste it somewhere safe." });
+      }
+    } catch(e) { setModalStatus({ ok: false, msg: "Copy failed. Please select all text and copy manually." }); }
+  };
+  const doImport = () => {
+    try {
+      const p = JSON.parse(importText.trim());
+      if (typeof p !== "object" || p === null) throw new Error("Invalid");
+      if (p.completed)    setCompleted(p.completed);
+      if (p.notes)        setNotes(p.notes);
+      if (p.workoutLogs)  setWorkoutLogs(p.workoutLogs);
+      if (p.startDate)  { setStartDate(p.startDate); setPendingStart(p.startDate); setPendingRace(addDays(p.startDate, RACE_OFFSET)); }
+      setModalStatus({ ok: true, msg: "Data imported successfully! You can close this." });
+    } catch(e) {
+      setModalStatus({ ok: false, msg: "Invalid data. Make sure you pasted the full exported text." });
+    }
+  };
+
   const trainingData = buildTrainingData(startDate);
   const raceDate = addDays(startDate, RACE_OFFSET);
   const total = trainingData.length;
@@ -524,7 +638,7 @@ function App() {
   // Collect magic mile history for stats
   const mmHistory = trainingData
     .map((s, i) => ({ ...s, idx: i }))
-    .filter(s => s.type === "special" && workoutLogs[s.idx] && (workoutLogs[s.idx].mmTime || workoutLogs[s.idx].pace))
+    .filter(s => s.type === "special" && workoutLogs[s.idx] && (workoutLogs[s.idx].mmTime || workoutLogs[s.idx].remainTime))
     .map(s => ({ date: s.date, ...workoutLogs[s.idx] }));
 
   return (
@@ -552,6 +666,8 @@ function App() {
           <button className="dbtn race-btn" onClick={() => showPicker && pickerMode === "race" ? setShowPicker(false) : openPicker("race")}>
             🏁 Race: {fmtShort(raceDate)}
           </button>
+          <button className="data-btn" onClick={openExport}>💾 Export</button>
+          <button className="data-btn" onClick={openImport}>📥 Import</button>
         </div>
         {showPicker && (
           <div className="dppanel">
@@ -628,13 +744,16 @@ function App() {
                         <CardioLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
                       )}
                       {(session.type === "run") && (
-                        <RunLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                        <RunLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs}
+                          distanceMiles={parseFloat(session.workout)} />
                       )}
                       {(session.type === "long") && (
-                        <LongRunLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                        <LongRunLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs}
+                          distanceMiles={parseFloat(session.workout)} />
                       )}
                       {session.type === "special" && (
-                        <MagicMileLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs} />
+                        <MagicMileLog idx={session.idx} logs={workoutLogs} setLogs={setWorkoutLogs}
+                          distanceMiles={parseFloat(session.workout)} />
                       )}
 
                       {/* Note */}
@@ -701,7 +820,8 @@ function App() {
                     <tr>
                       <th>Date</th>
                       <th>MM Time</th>
-                      <th>Run Pace</th>
+                      <th>Rem. Time</th>
+                      <th>Rem. Pace</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -709,6 +829,7 @@ function App() {
                       <tr key={i}>
                         <td>{fmtShort(mm.date)}</td>
                         <td>{mm.mmTime ? <strong style={{ color: "#e65100" }}>{mm.mmTime}</strong> : "—"}</td>
+                        <td>{mm.remainTime || "—"}</td>
                         <td>{mm.pace ? mm.pace + " /mi" : "—"}</td>
                       </tr>
                     ))}
@@ -731,6 +852,48 @@ function App() {
           </div>
         )}
       </div>
+      {/* ── EXPORT / IMPORT MODAL ── */}
+      {showDataModal && (
+        <div className="modal-overlay" onClick={() => setShowDataModal(false)}>
+          <div className="modal-box" onClick={e => e.stopPropagation()}>
+            {dataModalMode === "export" ? (
+              <>
+                <div className="modal-title">📤 Export Your Data</div>
+                <div className="modal-sub">
+                  Copy this text and save it somewhere safe (Notes app, email to yourself, etc.).
+                  You can use it to restore your data in a new install.
+                </div>
+                <textarea className="modal-textarea" readOnly value={getExportJson()}
+                  onFocus={e => e.target.select()} />
+                {modalStatus && (
+                  <div className={"modal-status " + (modalStatus.ok ? "ok" : "err")}>{modalStatus.msg}</div>
+                )}
+                <div className="modal-btns">
+                  <button className="modal-btn success" onClick={copyExport}>📋 Copy to Clipboard</button>
+                  <button className="modal-btn ghost" onClick={() => setShowDataModal(false)}>Close</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="modal-title">📥 Import Your Data</div>
+                <div className="modal-sub">
+                  Paste your previously exported data below. This will overwrite your current data.
+                </div>
+                <textarea className="modal-textarea" value={importText}
+                  onChange={e => { setImportText(e.target.value); setModalStatus(null); }}
+                  placeholder="Paste your exported data here..." />
+                {modalStatus && (
+                  <div className={"modal-status " + (modalStatus.ok ? "ok" : "err")}>{modalStatus.msg}</div>
+                )}
+                <div className="modal-btns">
+                  <button className="modal-btn danger" onClick={doImport}>📥 Import & Restore</button>
+                  <button className="modal-btn ghost" onClick={() => setShowDataModal(false)}>Cancel</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
