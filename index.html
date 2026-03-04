@@ -790,14 +790,14 @@ function App() {
             <div className="sc">
               <div className="sct">Overall Progress</div>
               <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
-                <div><div className="bnum">{done}</div><div className="blbl">Workouts Done</div></div>
+                <div><div className="bnum">{done}</div><div className="blbl">Runs Completed</div></div>
                 <div><div className="bnum" style={{ color: "#43a047" }}>{total - done}</div><div className="blbl">Remaining</div></div>
                 <div><div className="bnum" style={{ color: "#e65100" }}>{pct}%</div><div className="blbl">Complete</div></div>
               </div>
             </div>
 
             <div className="sc">
-              <div className="sct">Workout Breakdown</div>
+              <div className="sct">Run Breakdown</div>
               <div className="tbd">
                 {Object.entries(typeStyles).map(([type, ts]) => {
                   const count = trainingData.filter(s => s.type === type).length;
@@ -850,7 +850,7 @@ function App() {
                     style={{ background: completed[i] ? ts.border : "#dde3ed", opacity: completed[i] ? 1 : 0.6 }} />;
                 })}
               </div>
-              <div className="timeline-legend">Each square = one workout · Colored when complete</div>
+              <div className="timeline-legend">Each square = one run · Colored when complete</div>
             </div>
           </div>
         )}
