@@ -250,7 +250,7 @@ const rawSchedule = [
 
 const typeStyles = {
   cardio:  { bg: "#e8f4fd", border: "#1565c0", text: "#1565c0", label: "Timed Run" },
-  run:     { bg: "#e8f5e9", border: "#2e7d32", text: "#2e7d32", label: "Run" },
+  run:     { bg: "#e8f5e9", border: "#2e7d32", text: "#2e7d32", label: "Mileage Run" },
   long:    { bg: "#f3e5f5", border: "#6a1b9a", text: "#6a1b9a", label: "Long Run" },
   special: { bg: "#fff8e1", border: "#e65100", text: "#e65100", label: "Magic Mile" },
   race:    { bg: "#ffebee", border: "#c62828", text: "#c62828", label: "RACE DAY" },
@@ -274,9 +274,12 @@ function fmtDay(dateStr) {
   return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", { weekday: "long" });
 }
 function getCurrentIdx(data) {
-  const today = new Date();
+  const now = new Date();
+  const todayStr = now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0");
   for (let i = 0; i < data.length; i++) {
-    if (new Date(data[i].date + "T00:00:00") >= today) return i;
+    if (data[i].date >= todayStr) return i;
   }
   return data.length - 1;
 }
