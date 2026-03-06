@@ -53,18 +53,25 @@
     .navtabs { background: #fff; border-bottom: 3px solid #e0e0e0; display: flex; padding: 0 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 10; }
     .ntab { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 1.2rem; cursor: pointer; color: #888; border: none; background: none; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: all 0.15s; }
     .ntab.active { color: #1565c0; border-bottom-color: #1565c0; }
-    .content { padding: 1.2rem; max-width: 680px; margin: 0 auto; padding-bottom: 2rem; }
+    .content { padding: 1.2rem; max-width: 680px; margin: 0 auto; padding-bottom: 2rem; width: 100%; }
 
     @media (min-width: 768px) {
-      .content { max-width: 100%; padding: 1.2rem 2rem; }
-      .scard { padding: 1rem 1.4rem; }
-      .wblk { max-width: 100%; }
+      .content { max-width: 100% !important; width: 100%; padding: 1.2rem 2.5rem; box-sizing: border-box; }
+      .wblk { width: 100%; }
+      .scard { width: 100%; }
+      .hdr-top { padding: 1.2rem 2.5rem 0; }
+      .stats-bar { padding: 0.75rem 2.5rem; }
+      .date-btns { padding: 0.6rem 2.5rem; flex-wrap: wrap; }
+      .dppanel { padding: 0.9rem 2.5rem; }
+      .navtabs { padding: 0 2.5rem; }
     }
     @media (min-width: 1200px) {
-      .content { max-width: 100%; padding: 1.2rem 4rem; }
-    }
-    @media (min-width: 1600px) {
-      .content { padding: 1.2rem 8rem; }
+      .content { padding: 1.2rem 4rem; }
+      .hdr-top { padding: 1.2rem 4rem 0; }
+      .stats-bar { padding: 0.75rem 4rem; }
+      .date-btns { padding: 0.6rem 4rem; }
+      .dppanel { padding: 0.9rem 4rem; }
+      .navtabs { padding: 0 4rem; }
     }
     .wblk { margin-bottom: 1.4rem; }
     .whdr { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.55rem; }
@@ -919,7 +926,7 @@ function App() {
     .map(s => ({ date: s.date, ...workoutLogs[s.idx] }));
 
   return (
-    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: view === "schedule" ? "100vh" : "auto", display: "flex", flexDirection: "column", overflow: view === "schedule" ? "hidden" : "visible" }}>
 
       <div className="hdr">
         <div className="hdr-top">
