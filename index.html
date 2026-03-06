@@ -738,7 +738,7 @@ function App() {
                       <div className="smeta">
                         <span className="dchip">{fmtDay(session.date)}, {fmtShort(session.date)}</span>
                         <span className="tbadge" style={{ background: ts.bg, color: ts.text, borderColor: ts.border + "55" }}>{ts.label}</span>
-                        {isToday && <span className="nextrun-chip">Next Run</span>}
+                        {isCur && !isDone && <span className="nextrun-chip">Next Run</span>}
                       </div>
                       <div className={"wname " + (isRace ? "race-wname" : "")}>{session.workout}</div>
 
