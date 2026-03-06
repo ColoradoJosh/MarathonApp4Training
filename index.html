@@ -317,12 +317,12 @@
       function draw(now2) {
         const elapsed = now2 - start;
         const progress = Math.min(elapsed / DURATION, 1);
-        const wandT = Math.min(elapsed / (DURATION * 0.35), 1);
+        const wandT = Math.min(elapsed / (DURATION * 0.2), 1);
         const wand = wandPath(wandT);
 
         ctx.clearRect(0, 0, W, H);
 
-        if (elapsed < DURATION * 0.35 && elapsed - lastSpawnTime > 0) {
+        if (elapsed < DURATION * 0.2 && elapsed - lastSpawnTime > 0) {
           spawnParticles(wand.x, wand.y, 35);
           if (Math.random() < 0.5) spawnStar(wand.x, wand.y);
 
