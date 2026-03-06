@@ -13,7 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; overflow: auto; }
     html, body, #root { height: 100%; }
     body { font-family: 'Barlow', sans-serif; background: #f5f7fa; -webkit-tap-highlight-color: transparent; }
     .hdr { background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%); position: relative; overflow: hidden; }
@@ -659,7 +659,7 @@ function App() {
     .map(s => ({ date: s.date, ...workoutLogs[s.idx] }));
 
   return (
-    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: view === "schedule" ? "100vh" : "auto", display: "flex", flexDirection: "column", overflow: view === "schedule" ? "hidden" : "visible" }}>
 
       <div className="hdr">
         <div className="hdr-top">
