@@ -13,7 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <style>
-    html, body, #root { height: 100%; overflow: auto; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #root { height: 100%; }
     body { font-family: 'Barlow', sans-serif; background: #f5f7fa; -webkit-tap-highlight-color: transparent; }
     .hdr { background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%); position: relative; overflow: hidden; }
@@ -26,10 +26,10 @@
     .pbar { height: 4px; background: rgba(255,255,255,0.2); }
     .pfill { height: 100%; background: #69f0ae; transition: width 0.5s ease; }
     .stats-bar { background: rgba(0,0,0,0.25); padding: 0.75rem 1.2rem; display: flex; gap: 0; flex-wrap: wrap; align-items: stretch; }
-    .stat-item { display: flex; flex-direction: column; align-items: center; padding: 0 0.6rem; border-right: 1px solid rgba(255,255,255,0.15); min-width: 0; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; padding: 0 0.9rem; border-right: 1px solid rgba(255,255,255,0.15); min-width: 60px; }
     .stat-item:first-child { padding-left: 0; }
     .stat-item:last-child { border-right: none; }
-    .stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 800; color: #fff; line-height: 1; }
+    .stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1; }
     .stat-lbl { font-family: 'Barlow', sans-serif; font-size: 0.55rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.1rem; white-space: nowrap; }
     .stat-green { color: #69f0ae; }
     .date-btns { display: flex; gap: 0.5rem; padding: 0.6rem 1.2rem; flex-wrap: wrap; }
@@ -54,6 +54,13 @@
     .ntab { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 1.2rem; cursor: pointer; color: #888; border: none; background: none; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: all 0.15s; }
     .ntab.active { color: #1565c0; border-bottom-color: #1565c0; }
     .content { padding: 1.2rem; max-width: 680px; margin: 0 auto; padding-bottom: 2rem; }
+
+    @media (min-width: 768px) {
+      .content { max-width: 92vw; padding: 1.2rem 2rem; }
+    }
+    @media (min-width: 1200px) {
+      .content { max-width: 88vw; padding: 1.2rem 3rem; }
+    }
     .wblk { margin-bottom: 1.4rem; }
     .whdr { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.55rem; }
     .week-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; background: #1565c0; padding: 0.2rem 0.65rem; border-radius: 2px; }
@@ -150,6 +157,245 @@
     body.schedule-view { overflow: hidden; }
     body.stats-view { overflow: auto; }
   </style>
+  <script>
+    // ── MAGIC DUST — triggered on workout completion ──
+    window._magicDustLastFired = 0;
+    window.triggerMagicDust = function(originX, originY) {
+      const now2 = Date.now();
+      if (now2 - window._magicDustLastFired < 3000) return;
+      window._magicDustLastFired = now2;
+      const canvas = document.createElement("canvas");
+      canvas.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;";
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const W = canvas.width;
+      const H = canvas.height;
+      const particles = [];
+      const DURATION = 5500;
+      const start = performance.now();
+
+      // Wand sweeps from the tapped circle position up to upper right
+      const startX = originX;
+      const startY = originY;
+      const wandPath = (t) => ({
+        x: startX + (W * 1.04 - startX) * t,
+        y: startY - (H * 0.32 * Math.sin(t * Math.PI)) - ((startY - H * 0.12) * t)
+      });
+
+      function randomColor() {
+        const colors = [
+          "rgba(255,255,255,",
+          "rgba(180,210,255,",
+          "rgba(100,160,255,",
+          "rgba(210,235,255,",
+          "rgba(255,255,255,",
+          "rgba(140,190,255,",
+          "rgba(200,225,255,",
+          "rgba(255,255,255,",
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      function spawnParticles(wx, wy, count) {
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 3 + Math.random() * 9;
+          const size = 1.5 + Math.random() * 3;
+          particles.push({
+            x: wx + (Math.random() - 0.5) * 80,
+            y: wy + (Math.random() - 0.5) * 80,
+            vx: Math.cos(angle) * speed * 2.0,
+            vy: Math.sin(angle) * speed - 1.5,
+            gravity: 0.025 + Math.random() * 0.02,
+            size: size,
+            life: 1.0,
+            decay: 0.0012 + Math.random() * 0.0025,
+            color: randomColor(),
+            twinkle: Math.random() * Math.PI * 2,
+            twinkleSpeed: 0.25 + Math.random() * 0.45,
+            shimmer: 0.4 + Math.random() * 0.6,
+            star: true,
+          });
+        }
+      }
+
+      function spawnStar(wx, wy) {
+        const arms = 8;
+        for (let i = 0; i < arms; i++) {
+          const angle = (i / arms) * Math.PI * 2;
+          const speed = 3 + Math.random() * 6;
+          particles.push({
+            x: wx + (Math.random() - 0.5) * 10,
+            y: wy + (Math.random() - 0.5) * 10,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1.5,
+            gravity: 0.05,
+            size: 3 + Math.random() * 4,
+            life: 1.0,
+            decay: 0.009,
+            color: "rgba(255,255,255,",
+            twinkle: Math.random() * Math.PI * 2,
+            twinkleSpeed: 0.3,
+            star: true,
+          });
+        }
+      }
+
+      // Initial burst from the checkbox position
+      function initialBurst() {
+        // Big immediate explosive ring burst
+        for (let i = 0; i < 200; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 5 + Math.random() * 14;
+          particles.push({
+            x: startX + (Math.random() - 0.5) * 8,
+            y: startY + (Math.random() - 0.5) * 8,
+            vx: Math.cos(angle) * speed * 2.2,
+            vy: Math.sin(angle) * speed - 3,
+            gravity: 0.04 + Math.random() * 0.03,
+            size: 1.5 + Math.random() * 4,
+            life: 1.0,
+            decay: 0.002 + Math.random() * 0.004,
+            color: randomColor(),
+            twinkle: Math.random() * Math.PI * 2,
+            twinkleSpeed: 0.25 + Math.random() * 0.45,
+            shimmer: 0.4 + Math.random() * 0.6,
+            star: true,
+          });
+        }
+        // Bright star bursts right at the tap point
+        for (let i = 0; i < 18; i++) {
+          const angle = (i / 10) * Math.PI * 2;
+          const speed = 6 + Math.random() * 8;
+          particles.push({
+            x: startX,
+            y: startY,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 2,
+            gravity: 0.04,
+            size: 4 + Math.random() * 4,
+            life: 1.0,
+            decay: 0.008,
+            color: "rgba(255,255,255,",
+            twinkle: Math.random() * Math.PI * 2,
+            twinkleSpeed: 0.3,
+            shimmer: 0.8,
+            star: true,
+          });
+        }
+      }
+
+      initialBurst();
+
+      let lastSpawnTime = 0;
+
+      function draw(now2) {
+        const elapsed = now2 - start;
+        const progress = Math.min(elapsed / DURATION, 1);
+        const wandT = Math.min(elapsed / (DURATION * 0.35), 1);
+        const wand = wandPath(wandT);
+
+        ctx.clearRect(0, 0, W, H);
+
+        if (elapsed < DURATION * 0.35 && elapsed - lastSpawnTime > 0) {
+          spawnParticles(wand.x, wand.y, 35);
+          if (Math.random() < 0.5) spawnStar(wand.x, wand.y);
+
+          // Wand tip glow
+          const grd = ctx.createRadialGradient(wand.x, wand.y, 0, wand.x, wand.y, 28);
+          grd.addColorStop(0, "rgba(255,255,255,0.95)");
+          grd.addColorStop(0.3, "rgba(150,200,255,0.6)");
+          grd.addColorStop(1, "rgba(100,160,255,0)");
+          ctx.fillStyle = grd;
+          ctx.beginPath();
+          ctx.arc(wand.x, wand.y, 28, 0, Math.PI * 2);
+          ctx.fill();
+
+          lastSpawnTime = elapsed;
+        }
+
+        // Update and draw particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.vx *= 0.985;
+          p.life -= p.decay;
+          p.twinkle += p.twinkleSpeed;
+
+          if (p.life <= 0) { particles.splice(i, 1); continue; }
+
+          const shimmer = p.shimmer || 0.5;
+          const twinklePulse = Math.abs(Math.sin(p.twinkle));
+          const twinkleAlpha = p.life * (1 - shimmer + shimmer * twinklePulse);
+          const size = p.size * (0.4 + 0.6 * p.life) * (0.85 + 0.15 * twinklePulse);
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.twinkle);
+
+          // Outer glow
+          const outerR = size * (p.size > 5 ? 4 : 3);
+          const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, outerR);
+          glow.addColorStop(0, p.color + (twinkleAlpha * 0.5) + ")");
+          glow.addColorStop(1, p.color + "0)");
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(0, 0, outerR, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 4-point star
+          ctx.fillStyle = p.color + twinkleAlpha + ")";
+          ctx.beginPath();
+          const pts = 4;
+          for (let s = 0; s < pts * 2; s++) {
+            const a = (s / (pts * 2)) * Math.PI * 2;
+            const r = s % 2 === 0 ? size * 2.2 : size * 0.75;
+            s === 0 ? ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r)
+                    : ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+          }
+          ctx.closePath();
+          ctx.fill();
+
+          // Bright center
+          ctx.fillStyle = "rgba(255,255,255," + twinkleAlpha + ")";
+          ctx.beginPath();
+          ctx.arc(0, 0, size * 0.35, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Shimmer cross — thin perpendicular lines that pulse
+          const crossAlpha = twinkleAlpha * twinklePulse * 1.2;
+          if (crossAlpha > 0.05) {
+            ctx.strokeStyle = "rgba(255,255,255," + crossAlpha + ")";
+            ctx.lineWidth = size * 0.28;
+            ctx.beginPath();
+            ctx.moveTo(-size * 3.5, 0); ctx.lineTo(size * 3.5, 0);
+            ctx.moveTo(0, -size * 3.5); ctx.lineTo(0, size * 3.5);
+            ctx.stroke();
+          }
+
+          ctx.restore();
+        }
+
+        // Fade out
+        if (progress > 0.78) {
+          canvas.style.opacity = String(1 - ((progress - 0.78) / 0.22));
+        }
+
+        if (progress < 1 || particles.length > 0) {
+          requestAnimationFrame(draw);
+        } else {
+          canvas.remove();
+        }
+      }
+
+      requestAnimationFrame(draw);
+    };
+  </script>
 </head>
 <body>
 <div id="root"></div>
@@ -643,7 +889,16 @@ function App() {
   return sum;
 }, 0);
 
-  const toggleDone = (i) => setCompleted(p => ({ ...p, [i]: !p[i] }));
+  const toggleDone = (i, e) => {
+    const wasCompleted = completed[i];
+    setCompleted(p => ({ ...p, [i]: !p[i] }));
+    if (!wasCompleted && e && window.triggerMagicDust) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      window.triggerMagicDust(x, y);
+    }
+  };
   const saveNote = (i) => { setNotes(p => ({ ...p, [i]: noteText })); setEditingNote(null); setNoteText(""); };
 
   let weeks = [], curWeek = null;
@@ -659,7 +914,7 @@ function App() {
     .map(s => ({ date: s.date, ...workoutLogs[s.idx] }));
 
   return (
-    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: view === "schedule" ? "100vh" : "auto", display: "flex", flexDirection: "column", overflow: view === "schedule" ? "hidden" : "visible" }}>
+    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
       <div className="hdr">
         <div className="hdr-top">
@@ -745,7 +1000,7 @@ function App() {
                     className={"scard " + (isDone ? "done " : "") + (isCur ? "cur " : "") + (isRace ? "race-card" : "")}>
 
                     {/* Checkbox — clicking only toggles done */}
-                    <div className={"chk " + (isDone ? "on" : "")} onClick={() => toggleDone(session.idx)}>
+                    <div className={"chk " + (isDone ? "on" : "")} onClick={(e) => toggleDone(session.idx, e)}>
                       {isDone ? "✓" : ""}
                     </div>
 
