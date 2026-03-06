@@ -666,7 +666,7 @@ function App() {
         <div className="pbar"><div className="pfill" style={{ width: pct + "%" }} /></div>
         <div className="stats-bar">
           <div className="stat-item"><div className="stat-val stat-green">{done}</div><div className="stat-lbl">Done</div></div>
-          <div className="stat-item"><div className="stat-val stat-green">{totalMilesLogged.toFixed(1)}</div><div className="stat-lbl">Miles</div></div>
+          <div className="stat-item"><div className="stat-val stat-green">{totalMilesLogged.toFixed(2)}</div><div className="stat-lbl">Miles</div></div>
           <div className="stat-item"><div className="stat-val">{total - done}</div><div className="stat-lbl">Left</div></div>
           <div className="stat-item"><div className="stat-val stat-green">{pct}%</div><div className="stat-lbl">Progress</div></div>
           <div className="stat-item"><div className="stat-val">{daysLeft}</div><div className="stat-lbl">To Race</div></div>
@@ -800,7 +800,7 @@ function App() {
               <div className="sct">Overall Progress</div>
               <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
                 <div><div className="bnum">{done}</div><div className="blbl">Runs Completed</div></div>
-                <div><div className="bnum" style={{ color: "#2e7d32" }}>{totalMilesLogged.toFixed(1)}</div><div className="blbl">Miles</div></div>
+                <div><div className="bnum" style={{ color: "#2e7d32" }}>{totalMilesLogged.toFixed(2)}</div><div className="blbl">Miles</div></div>
                 <div><div className="bnum" style={{ color: "#43a047" }}>{total - done}</div><div className="blbl">Remaining</div></div>
                 <div><div className="bnum" style={{ color: "#e65100" }}>{pct}%</div><div className="blbl">Complete</div></div>
               </div>
