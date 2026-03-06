@@ -73,7 +73,7 @@
     .smeta { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.2rem; flex-wrap: wrap; }
     .dchip { font-family: 'Barlow', sans-serif; font-size: 0.65rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
     .tbadge { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.1rem 0.45rem; border-radius: 2px; border-width: 1px; border-style: solid; }
-    .today-chip { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: #1565c0; color: #fff; padding: 0.1rem 0.45rem; border-radius: 2px; }
+    .nextrun-chip { font-family: 'Barlow', sans-serif; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: #1565c0; color: #fff; padding: 0.1rem 0.45rem; border-radius: 2px; }
     .wname { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; letter-spacing: 0.02em; text-transform: uppercase; margin-bottom: 0.5rem; }
     .race-wname { color: #c62828; }
 
@@ -273,13 +273,13 @@ function fmtFull(dateStr) {
 function fmtDay(dateStr) {
   return new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", { weekday: "long" });
 }
-function getCurrentIdx(data) {
+function getCurrentIdx(data, completed) {
   const now = new Date();
   const todayStr = now.getFullYear() + "-" +
     String(now.getMonth() + 1).padStart(2, "0") + "-" +
     String(now.getDate()).padStart(2, "0");
   for (let i = 0; i < data.length; i++) {
-    if (data[i].date >= todayStr) return i;
+    if (data[i].date >= todayStr && !completed[i]) return i;
   }
   return data.length - 1;
 }
@@ -625,7 +625,7 @@ function App() {
   const total = trainingData.length;
   const done  = Object.values(completed).filter(Boolean).length;
   const pct   = Math.round((done / total) * 100);
-  const curIdx = getCurrentIdx(trainingData);
+  const curIdx = getCurrentIdx(trainingData, completed);
   const daysLeft = Math.max(0, Math.ceil((new Date(raceDate + "T12:00:00") - new Date()) / 86400000));
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -738,7 +738,7 @@ function App() {
                       <div className="smeta">
                         <span className="dchip">{fmtDay(session.date)}, {fmtShort(session.date)}</span>
                         <span className="tbadge" style={{ background: ts.bg, color: ts.text, borderColor: ts.border + "55" }}>{ts.label}</span>
-                        {isToday && <span className="today-chip">Today</span>}
+                        {isToday && <span className="nextrun-chip">Next Run</span>}
                       </div>
                       <div className={"wname " + (isRace ? "race-wname" : "")}>{session.workout}</div>
 
