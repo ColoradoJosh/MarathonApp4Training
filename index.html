@@ -147,6 +147,8 @@
     .modal-status.ok { background: #e8f5e9; color: #2e7d32; }
     .modal-status.err { background: #ffebee; color: #c62828; }
     .data-btn { display: flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.8rem; border-radius: 3px; font-family: 'Barlow', sans-serif; font-size: 0.68rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); color: #fff; letter-spacing: 0.04em; text-transform: uppercase; }
+    body.schedule-view { overflow: hidden; }
+    body.stats-view { overflow: auto; }
   </style>
 </head>
 <body>
@@ -565,6 +567,10 @@ function App() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, notes, workoutLogs, startDate })); } catch(e) {}
   }, [completed, notes, workoutLogs, startDate, loaded]);
 
+  useEffect(() => {
+  document.body.className = view === "schedule" ? "schedule-view" : "stats-view";
+}, [view]);
+
   const setLogsForIdx = (idx) => (updater) => setWorkoutLogs(prev => {
     const next = typeof updater === "function" ? updater(prev) : updater;
     return next;
@@ -653,7 +659,7 @@ function App() {
     .map(s => ({ date: s.date, ...workoutLogs[s.idx] }));
 
   return (
-    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Barlow', sans-serif", background: "#f5f7fa", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
       <div className="hdr">
         <div className="hdr-top">
@@ -711,7 +717,7 @@ function App() {
         <button className={"ntab " + (view === "stats" ? "active" : "")} onClick={() => setView("stats")}>Stats</button>
       </div>
 
-      <div className="content">
+      <div className="content" style={{ overflowY: "auto", flex: view === "schedule" ? 1 : "unset" }}>
 
         {view === "schedule" && weeks.map(week => {
           const ws = week.sessions[0]?.date;
